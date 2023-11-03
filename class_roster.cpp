@@ -66,15 +66,65 @@ double ClassRoster::GetGrade(int studentPosition, int subjectPosition) const {
 }
 
 bool ClassRoster::SetGrade(int studentPosition, int subjectPosition, double grade) {
-    return false;
+    if (studentPosition >= _numStudents || subjectPosition >= _numSubjects || studentPosition < 0 || subjectPosition < 0)
+        return false;
+    _grades[studentPosition][subjectPosition] = grade;
+    return true;
 }
 
 bool ClassRoster::AddStudentSubject(const Student &newStudent, const string &newSubject) {
-    return false;
+    if (_numStudents > 0)
+        return false;
+    _students = new Student* [1];
+    _subjects = new string [1];
+    _grades = new double* [1];
+    _grades[0] = new double;
+    _grades[0][0] = 0.0;
+    _students[0] = new Student(newStudent);
+    _subjects[0] = newSubject;
+    _numStudents = 1;
+    _numSubjects = 1;
 }
 
+
+
+
+
+
+
+
+
+
+
 bool ClassRoster::AddSubject(const string &newSubject) {
-    return false;
+    if (FindSubjectPosition(newSubject) != -1) // We didn't write a test for this
+        return false;
+    string* newStringArray = new string[_numSubjects + 1];
+    for (int i = 0; i < _numSubjects; ++i) {
+        newStringArray[i] = _subjects[i];
+    }
+    delete[] _subjects;
+    _subjects = newStringArray;
+    _subjects[_numSubjects] = newSubject;
+
+    double** newGradesMatrix = new double*[_numStudents];
+    for (int i = 0; i < _numStudents; ++i) {
+        newGradesMatrix[i] = new double[_numSubjects + 1];
+    }
+    for (int i = 0; i < _numStudents; ++i) {
+        for (int j = 0; j < _numSubjects; ++j) {
+            newGradesMatrix[i][j] = _grades[i][j];
+        }
+        newGradesMatrix[i][_numSubjects] = 0.0;
+    }
+    for (int i = 0; i < _numStudents; ++i) {
+        delete[] _grades[i];
+    }
+    delete[] _grades;
+
+    _grades = newGradesMatrix;
+
+    _numSubjects++;
 }
 
 bool ClassRoster::AddStudent(const Student &newStudent) {
